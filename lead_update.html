@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+      body {
+    font-family: Arial, sans-serif;
+  }
+  
+  form {
+    width: 300px;
+    margin: 0 auto;
+  }
+  
+  label {
+    display: inline-block;
+    width: 80px;
+  }
+  
+  input[type="text"],
+  input[type="email"],
+  input[type="tel"] {
+    width: 200px;
+    padding: 5px;
+    margin-bottom: 10px;
+  }
+    </style>
+</head>
+<body>
+    <form id="myForm">
+        <label for="id">Id:</label>
+        <input type="text" id="id" name="id" value="${item.id}"><br><br>
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name" value="${item.name}"><br><br>
+        <label for="city">City:</label>
+        <input type="text" id="city" name="city" value="${item.city}"><br><br>
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" value="${item.email}"><br><br>
+        <label for="mobile">Mobile:</label>
+        <input type="tel" id="mobile" name="mobile" value="${item.mobile}"><br><br>
+        <input type="submit" value="Submit">
+      </form>
+
+      <script>
+        // Retrieve URL parameters and populate form fields
+        const urlParams = new URLSearchParams(window.location.search);
+        const id = urlParams.get('id');
+        if (id) {
+            fetch(`http://localhost:8080/getById/${id}`)
+                .then(response => response.json())
+                .then(item => {
+                    document.getElementById('id').value = item.id;
+                    document.getElementById('name').value = item.name;
+                    document.getElementById('city').value = item.city;
+                    document.getElementById('email').value = item.email;
+                    document.getElementById('mobile').value = item.mobile;
+                })
+                .catch(error => {
+                    console.error('Error fetching item details:', error);
+                });
+        }
+    </script>
+    <script>
+        document.getElementById("myForm").addEventListener("submit", function(event) {
+    event.preventDefault();
+    
+    const formData = new FormData(event.target);
+    const data = {};
+    
+    formData.forEach((value, key) => {
+      data[key] = value;
+    });
+  
+    fetch("http://localhost:8080/put", {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(data)
+      
+    })
+    .then(response => response.json())
+    .then(responseData => {
+      console.log("Response from server:", responseData);
+      // You can perform further actions based on the response
+      
+      window.location.href = 'index.html';
+    })
+    .catch(error => {
+      console.error("Error:", error);
+    });
+  });
+    </script>
+</body>
+</html>

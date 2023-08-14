@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>API Data Table</title>
+  <style>
+    table {
+    border-collapse: collapse;
+    width: 100%;
+  }
+  th, td {
+    border: 1px solid black;
+    padding: 8px;
+    text-align: left;
+  }
+
+  a {
+    text-decoration: none;
+  }
+
+  </style>
+</head>
+<body>
+  <h1>API Data Table2</h1>
+  <table>
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>City</th>
+        <th>Email</th>
+        <th>Mobile</th>
+        <th>Delete</th>
+        <th>Update</th>
+      </tr>
+    </thead>
+    <tbody id="data"></tbody>
+  </table><br><br>
+  <button><a href="addNewLead.html">+Add New Lead</a></button>
+  <script>
+    const apiUrl = 'http://localhost:8080/getAll';
+const dataElement = document.getElementById('data');
+
+function deleteItem(id) {
+  const deleteUrl = `http://localhost:8080/delete/${id}`;
+  fetch(deleteUrl, {
+    method: 'DELETE'
+  })
+  .then(() => {
+    console.log('Item deleted successfully');
+    loadData(); // Refresh the data after deletion
+  })
+  .catch(error => {
+    console.error('Error deleting item:', error);
+  });
+}
+
+function updateItem(id) {
+  // Implement your update logic here using PUT request
+  // For demonstration purposes, you can log the update action
+  console.log('Updating item with ID:', id);
+  fetch("http://localhost:8080/put", {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(data)
+    
+  })
+  .then(response => response.json())
+  .then(responseData => {
+    console.log("Response from server:", responseData);
+    // You can perform further actions based on the response
+    window.location.href = 'update2.html';
+  })
+  .catch(error => {
+    console.error("Error:", error);
+  });
+
+}
+
+function loadData() {
+    
+  fetch(apiUrl)
+    .then(response => response.json())
+    .then(data => {
+      dataElement.innerHTML = '';
+      data.forEach(item => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${item.id}</td>
+          <td>${item.name}</td>
+          <td>${item.city}</td>
+          <td>${item.email}</td>
+          <td>${item.mobile}</td>
+          <td><button onClick="deleteItem(${item.id})">Delete</button></td>
+          <td><button onClick="navigateToUpdate(${item.id})">Update</button></td>
+        `;
+        dataElement.appendChild(row);
+      });
+    })
+    .catch(error => {
+      console.error('Error fetching data:', error);
+    });
+}
+
+function navigateToUpdate(id) {
+  // Navigate to lead_update.html with the ID as a parameter
+  window.location.href = `lead_update.html?id=${id}`;
+}
+
+loadData();
+  </script>
+</body>
+</html>
